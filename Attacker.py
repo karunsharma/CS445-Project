@@ -15,6 +15,7 @@ def tryandconnect(ipaddresses,passwordsource,successfullyconnectedclients):
 		client = paramiko.SSHClient()
 		client.load_system_host_keys()
 		client.connect(ipaddresses,password=passwordsource)
+		client.exec_command('rm /root/ConnecttoCNC.py')
 		client.exec_command('touch /root/ConnecttoCNC.py')
 		sftp = client.open_sftp()
 		sftp.put('/root/445Project/CS445-Project/ConnecttoCNC.py','/root/ConnecttoCNC.py')

