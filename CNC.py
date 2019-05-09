@@ -6,6 +6,7 @@ TARGET = ' '#IP Address of Kali Linux target VM to be read from the config file
 with open("Config.txt", 'r') as file:
 	content = file.readline()
 	TARGET = content[16:]
+	TARGET = TARGET.rstrip()
 
 
 def connectbot(clientsocketsource):

