@@ -35,7 +35,7 @@ Then you can start the SSH service
 ```
 service ssh start
 ```
-## Please start SSH before running the programs
+**Please start SSH before running the programs**
 
 ### Config File (Config.txt)
 There is a Config.txt file which is very important in which you can replace the ip addresses of the various fields to match your VM
