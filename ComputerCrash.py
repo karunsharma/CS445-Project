@@ -1,4 +1,4 @@
-import os
-
+import subprocess, sys
+osopener = "open" if sys.platform == "darwin" else "xdg-open"
 while True:
-	os.startfile("content.txt")
+	subprocess.call([osopener,"content.txt"])
