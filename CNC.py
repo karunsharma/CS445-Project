@@ -45,7 +45,7 @@ def sendcommands():
 			duration = raw_input("Enter the duration of the attack in seconds: ")
 
 		if int(input_get) == 4:
-			durationofflood = raw_input("Enter duration of flood in seconds")
+			durationofflood = raw_input("Enter duration of flood in seconds: ")
 
 		if int(input_get) == 2:
 			passattempts = []

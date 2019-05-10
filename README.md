@@ -11,7 +11,7 @@ python CNC.py
 python Attacker.py
 ```
 
-## Regarding Commits
+### Regarding Commits
 If you see commits by the name "Root" that is me Karun Sharma, I had issues configuring my git username and email on my local machine
 
 ### Important Notes
@@ -31,10 +31,10 @@ service ssh start
 ### Config File (Config.txt)
 There is a Config.txt file which is very important in which you can replace the ip addresses of the various fields to match your VM
 
-TARGET_SERVER = <The IP address of the VM that will be attacked>
-HOST_SERVER = <The IP address of the attacker VM>
+TARGET_SERVER = The IP address of the VM that will be attacked
+HOST_SERVER = The IP address of the attacker VM
 ```
-RANGE_OF_IP = <The IP range in which you want searched>
+RANGE_OF_IP = The IP range in which you want searched
 
 For example the ip addreeses of my VM's all started with 192.168.56.
 ```
@@ -68,3 +68,18 @@ python ConnecttoCNC.py
 
 ### Attacker VM
 Select the option to flood using plain packets
+
+##Important Dependencies
+- nmap
+- paramiko
+- scapy
+- socket
+
+## Author
+# Karun Sharma
+
+## What I've learned
+The Mirai Botnet is a botnet in which an attacker has a CNC (Command and Control server) set up and will asynchrousnly scan and try and SSH into IoT devices using a bruteforce technique. Once the Iot Device is accessed, the CNC can send commands to these devices which execute these attacks on a target server. This project achieves this goal by following a similar architecture and providing popular attack methods where the CNC.py script will be the server and the Attacker.py script will scan for IP addresses within a certain bound and install the ConnecttoCNC.py script on these IoT VM's through SSH and run this script which will use socket programming to connect back to the CNC and the CNC will now send commands of attack through TCP packets and will use Scapy to execute these attacks.
+
+##Monitoring Attacks
+SYN flood and flooding using random byte packets can be monitored using Wireshark on the target VM

@@ -4,7 +4,6 @@ from scapy.all import *
 import random
 import nmap
 import string
-import requests
 import uuid
 import time
 import os
